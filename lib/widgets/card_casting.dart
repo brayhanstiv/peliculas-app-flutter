@@ -8,7 +8,6 @@ class CastingCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 130,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 20,

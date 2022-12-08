@@ -1,8 +1,39 @@
 // Packages
 import 'package:flutter/material.dart';
 
-class CardSlider extends StatelessWidget {
-  const CardSlider({super.key});
+// Models
+import 'package:peliculas/models/response.model.dart';
+import 'package:peliculas/screens/index.dart';
+
+class CardSlider extends StatefulWidget {
+  final List<Movie> movies;
+  final Function onNextPage;
+
+  const CardSlider({super.key, required this.movies, required this.onNextPage});
+
+  @override
+  State<CardSlider> createState() => _CardSliderState();
+}
+
+class _CardSliderState extends State<CardSlider> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 500) {
+        widget.onNextPage();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.removeListener(() {});
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +54,14 @@ class CardSlider extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
+              controller: scrollController,
               scrollDirection: Axis.horizontal,
-              itemCount: 20,
-              itemBuilder: (context, index) => const _MoviePoster(),
+              itemCount: widget.movies.length,
+              itemBuilder: (context, index) {
+                return _MoviePoster(
+                  movie: widget.movies[index],
+                );
+              },
             ),
           )
         ],
@@ -35,8 +71,11 @@ class CardSlider extends StatelessWidget {
 }
 
 class _MoviePoster extends StatelessWidget {
+  final Movie movie;
+
   const _MoviePoster({
     Key? key,
+    required this.movie,
   }) : super(key: key);
 
   @override
@@ -50,13 +89,13 @@ class _MoviePoster extends StatelessWidget {
             onTap: () => Navigator.pushNamed(
               context,
               '/detail',
-              arguments: 'movie-instance',
+              arguments: DetailsScreenArguments(movie: movie),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: const FadeInImage(
-                placeholder: AssetImage('assets/no-image.jpg'),
-                image: NetworkImage('https://via.placeholder.com/300x400'),
+              child: FadeInImage(
+                placeholder: const AssetImage('assets/no-image.jpg'),
+                image: NetworkImage(movie.fullPosterImg),
                 fit: BoxFit.contain,
                 width: 130,
                 height: 170,
@@ -64,8 +103,8 @@ class _MoviePoster extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5),
-          const Text(
-            'Starwars: El retorno del nuevo Jedi silvestre de Monte Cristo',
+          Text(
+            movie.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,

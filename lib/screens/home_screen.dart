@@ -19,7 +19,13 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Películas en cines'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search_outlined)),
+          IconButton(
+            onPressed: () => showSearch(
+              context: context,
+              delegate: MovieSearchDelegate(),
+            ),
+            icon: const Icon(Icons.search_outlined),
+          ),
         ],
       ),
       body: SingleChildScrollView(

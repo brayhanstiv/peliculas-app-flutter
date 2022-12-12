@@ -91,14 +91,17 @@ class _MoviePoster extends StatelessWidget {
               '/detail',
               arguments: DetailsScreenArguments(movie: movie),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: FadeInImage(
-                placeholder: const AssetImage('assets/no-image.jpg'),
-                image: NetworkImage(movie.fullPosterImg),
-                fit: BoxFit.contain,
-                width: 130,
-                height: 170,
+            child: Hero(
+              tag: 'swiper-${movie.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: FadeInImage(
+                  placeholder: const AssetImage('assets/no-image.jpg'),
+                  image: NetworkImage(movie.fullPosterImg),
+                  fit: BoxFit.contain,
+                  width: 130,
+                  height: 170,
+                ),
               ),
             ),
           ),

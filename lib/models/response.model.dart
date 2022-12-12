@@ -96,7 +96,7 @@ class Movie {
   String title;
   bool video;
   double voteAverage;
-  int voteCount;
+  int? voteCount;
   String get fullPosterImg {
     if (posterPath != null) {
       return 'https://image.tmdb.org/t/p/w500/$posterPath';

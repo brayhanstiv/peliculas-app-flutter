@@ -33,12 +33,15 @@ class CardSwipper extends StatelessWidget {
                 '/detail',
                 arguments: DetailsScreenArguments(movie: movies[index]),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: FadeInImage(
-                  placeholder: const AssetImage('assets/no-image.jpg'),
-                  image: NetworkImage(movies[index].fullPosterImg),
-                  fit: BoxFit.cover,
+              child: Hero(
+                tag: movies[index].id,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: FadeInImage(
+                    placeholder: const AssetImage('assets/no-image.jpg'),
+                    image: NetworkImage(movies[index].fullPosterImg),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             );

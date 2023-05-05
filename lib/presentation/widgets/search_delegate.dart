@@ -1,8 +1,16 @@
+// Packages
 import 'package:flutter/material.dart';
-import 'package:peliculas/models/response.model.dart';
-import 'package:peliculas/providers/index.dart';
-import 'package:peliculas/screens/index.dart';
-import 'package:provider/provider.dart';
+
+// Models
+import 'package:peliculas/domain/models/response.model.dart';
+
+// Views
+import 'package:peliculas/presentation/views/detail/details_page.dart';
+
+// Architecture
+import 'package:peliculas/data/repositories_impl/movies_repository_impl.dart';
+import 'package:peliculas/data/services/remote/movies_service.dart';
+import 'package:peliculas/domain/repositories/movies_repository.dart';
 
 class MovieSearchDelegate extends SearchDelegate {
   @override
@@ -28,30 +36,49 @@ class MovieSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return const Text('results');
+    final MoviesRepository moviesRespository =
+        MoviesRepositoryImpl(MoviesService());
+
+    return GetSearch(moviesRespository: moviesRespository, query: query);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final MoviesProvider moviesProvider = Provider.of<MoviesProvider>(context);
-    moviesProvider.getSuggestionsByQuery(query);
-    if (query.isEmpty) {
-      return const SizedBox(
-        child: Center(
-          child: Icon(
-            Icons.movie_creation_outlined,
-            color: Colors.black38,
-            size: 100,
-          ),
-        ),
-      );
-    }
+    final MoviesRepository moviesRespository =
+        MoviesRepositoryImpl(MoviesService());
 
-    return StreamBuilder(
-      stream: moviesProvider.suggetionsStream,
+    return GetSearch(moviesRespository: moviesRespository, query: query);
+  }
+}
+
+class GetSearch extends StatelessWidget {
+  const GetSearch({
+    super.key,
+    required this.moviesRespository,
+    required this.query,
+  });
+
+  final MoviesRepository moviesRespository;
+  final String query;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: moviesRespository.searchMovies(query),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.done) {
           List<Movie> data = snapshot.data!;
+          if (data.isEmpty) {
+            const SizedBox(
+              child: Center(
+                child: Icon(
+                  Icons.movie_creation_outlined,
+                  color: Colors.black38,
+                  size: 100,
+                ),
+              ),
+            );
+          }
           return ListView.builder(
             itemCount: data.length,
             itemBuilder: (context, index) {
@@ -59,6 +86,10 @@ class MovieSearchDelegate extends SearchDelegate {
                 movie: data[index],
               );
             },
+          );
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
         }
 

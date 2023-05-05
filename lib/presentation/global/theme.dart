@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Constants
-import 'package:peliculas/common/constants.dart';
+import 'package:peliculas/presentation/global/constants.dart';
 
 ThemeData themeLight = ThemeData.light().copyWith(
   appBarTheme: const AppBarTheme(
